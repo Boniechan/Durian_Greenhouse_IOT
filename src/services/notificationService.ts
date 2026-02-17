@@ -1,30 +1,18 @@
 import * as Notifications from 'expo-notifications';
 import { ref, onValue } from 'firebase/database';
 import { db } from './firebaseConfig';
-import Constants from 'expo-constants';
 
-// Check if running in Expo Go
-const isExpoGo = Constants.appOwnership === 'expo';
-
-if (!isExpoGo) {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
-}
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export const configureNotifications = async (intervalHours: number) => {
-  // Skip notifications in Expo Go
-  if (isExpoGo) {
-    console.log('Notifications disabled in Expo Go environment');
-    return false;
-  }
-
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') {
     return false;
@@ -45,12 +33,6 @@ export const configureNotifications = async (intervalHours: number) => {
 };
 
 const checkAndNotify = async (data: any) => {
-  // Skip notifications in Expo Go
-  if (isExpoGo) {
-    console.log('Would send notification (Expo Go):', data);
-    return;
-  }
-
   if (data.temperature > 35) {
     await sendNotification(
       'High Temperature Alert',
@@ -74,11 +56,6 @@ const checkAndNotify = async (data: any) => {
 };
 
 const sendNotification = async (title: string, body: string) => {
-  if (isExpoGo) {
-    console.log('Mock notification:', title, body);
-    return;
-  }
-
   await Notifications.scheduleNotificationAsync({
     content: {
       title,
@@ -89,11 +66,6 @@ const sendNotification = async (title: string, body: string) => {
 };
 
 const scheduleRecurringNotification = async (intervalHours: number) => {
-  if (isExpoGo) {
-    console.log('Mock recurring notification scheduled for', intervalHours, 'hours');
-    return;
-  }
-
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Greenhouse Status Update',

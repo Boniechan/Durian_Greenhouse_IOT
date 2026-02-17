@@ -1,18 +1,35 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useGreenhouseData } from "../hooks/useGreenhouseData";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function StatusIndicator() {
+  const { data } = useGreenhouseData();
+
+  const ControlItem = ({ icon, label, status }: { icon: string; label: string; status: boolean }) => (
+    <View style={styles.controlRow}>
+      <View style={styles.controlItem}>
+        <MaterialCommunityIcons 
+          name={icon} 
+          size={20} 
+          color={status ? "#16A34A" : "#9CA3AF"} 
+        />
+        <Text style={styles.controlLabel}>{label}</Text>
+      </View>
+      <View style={[styles.statusBadge, status ? styles.statusOn : styles.statusOff]}>
+        <Text style={[styles.statusText, status ? styles.statusOnText : styles.statusOffText]}>
+          {status ? "ON" : "OFF"}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.card}>
-      <Text style={styles.heading}>Status Indicators</Text>
-      <View style={styles.row}>
-        <View style={styles.dotGreen} />
-        <Text style={styles.textGreen}>Optimal/Normal</Text>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.dotRed} />
-        <Text style={styles.textRed}>Needs Attention</Text>
-      </View>
+      <Text style={styles.heading}>Device Controls</Text>
+      <ControlItem icon="water-pump" label="Water Pump" status={data.waterPump ?? false} />
+      <ControlItem icon="fan" label="Fan" status={data.fan ?? false} />
+      <ControlItem icon="water-opacity" label="Misting" status={data.misting ?? false} />
     </View>
   );
 }
@@ -26,10 +43,43 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EEF2F3",
   },
-  heading: { fontSize: 14, color: "#667085", marginBottom: 8 },
-  row: { flexDirection: "row", alignItems: "center", marginTop: 6 },
-  dotGreen: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#16A34A", marginRight: 8 },
-  dotRed: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#EF4444", marginRight: 8 },
-  textGreen: { color: "#16A34A", fontWeight: "600" },
-  textRed: { color: "#EF4444", fontWeight: "600" },
+  heading: { fontSize: 14, color: "#667085", marginBottom: 12, fontWeight: "600" },
+  controlRow: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "space-between",
+    marginTop: 10,
+    paddingVertical: 8
+  },
+  controlItem: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    gap: 10 
+  },
+  controlLabel: { 
+    fontSize: 14, 
+    color: "#374151", 
+    fontWeight: "500" 
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusOn: {
+    backgroundColor: "#D1FAE5",
+  },
+  statusOff: {
+    backgroundColor: "#F3F4F6",
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  statusOnText: {
+    color: "#16A34A",
+  },
+  statusOffText: {
+    color: "#9CA3AF",
+  },
 });

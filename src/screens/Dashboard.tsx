@@ -57,27 +57,6 @@ export default function Dashboard() {
         </Text>
       </View>
 
-      {/* Plant status row */}
-      <View style={styles.rowSplit}>
-        <View style={[styles.cardMini]}>
-          <View style={styles.row}>
-            <Ionicons name="leaf" size={18} color="#16A34A" />
-            <Text style={styles.smallTitle}>Living Plants</Text>
-          </View>
-          <Text style={styles.miniValue}>{data.livingPlants ?? 0}</Text>
-        </View>
-
-        <View style={[styles.cardMini, { borderColor: "#FEE2E2" }]}>
-          <View style={styles.row}>
-            <Ionicons name="close-circle" size={18} color="#EF4444" />
-            <Text style={styles.smallTitle}>Dead Plants</Text>
-          </View>
-          <Text style={[styles.miniValue, { color: "#EF4444" }]}>
-            {data.deadPlants ?? 0}
-          </Text>
-        </View>
-      </View>
-
       {/* Sensor cards */}
       <SensorCard title="Temperature" value={`${data.temperature ?? "--"} °C`} rightLabel={tempStatus} />
       <SensorCard title="Humidity" value={`${data.humidity ?? "--"} %`} rightLabel={humStatus} />

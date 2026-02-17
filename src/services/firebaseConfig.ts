@@ -2,32 +2,32 @@ import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
+import Constants from 'expo-constants';
+
+// Get Firebase config from Constants (Expo's way of reading .env)
+const firebaseConfig = {
+  apiKey: Constants.expoConfig?.extra?.firebaseApiKey || process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain || process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: Constants.expoConfig?.extra?.firebaseDatabaseUrl || process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: Constants.expoConfig?.extra?.firebaseProjectId || process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket || process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId || process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: Constants.expoConfig?.extra?.firebaseAppId || process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: Constants.expoConfig?.extra?.firebaseMeasurementId || process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
 
 // Enhanced debug logging
 if (__DEV__) {
   console.log('=== Firebase Configuration Debug ===');
-  console.log('Environment variables:');
-  console.log('API_KEY:', process.env.EXPO_PUBLIC_FIREBASE_API_KEY ? 'EXISTS' : 'MISSING');
-  console.log('AUTH_DOMAIN:', process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN ? 'EXISTS' : 'MISSING');
-  console.log('DATABASE_URL:', process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL ? 'EXISTS' : 'MISSING');
-  console.log('PROJECT_ID:', process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID ? 'EXISTS' : 'MISSING');
-  console.log('STORAGE_BUCKET:', process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ? 'EXISTS' : 'MISSING');
-  console.log('MESSAGING_SENDER_ID:', process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ? 'EXISTS' : 'MISSING');
-  console.log('APP_ID:', process.env.EXPO_PUBLIC_FIREBASE_APP_ID ? 'EXISTS' : 'MISSING');
-  console.log('MEASUREMENT_ID:', process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID ? 'EXISTS' : 'MISSING');
+  console.log('Config Object:', {
+    apiKey: firebaseConfig.apiKey ? '✓' : '✗',
+    authDomain: firebaseConfig.authDomain ? '✓' : '✗',
+    databaseURL: firebaseConfig.databaseURL ? '✓' : '✗',
+    projectId: firebaseConfig.projectId ? '✓' : '✗',
+    storageBucket: firebaseConfig.storageBucket ? '✓' : '✗',
+  });
   console.log('=====================================');
 }
-
-const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL,
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
-};
 
 // Validate critical Firebase config values
 const requiredFields: (keyof typeof firebaseConfig)[] = ['apiKey', 'authDomain', 'databaseURL', 'projectId'];

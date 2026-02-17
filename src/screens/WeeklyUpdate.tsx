@@ -66,8 +66,6 @@ export default function WeeklyUpdate() {
         temperature: data.temperature || 0,
         humidity: data.humidity || 0,
         soilMoisture: data.soilMoisture || 0,
-        livingPlants: data.livingPlants || 0,
-        deadPlants: data.deadPlants || 0,
         photoUrl,
       };
 
@@ -113,10 +111,7 @@ export default function WeeklyUpdate() {
           </View>
         </View>
 
-        <View style={styles.plantStats}>
-          <Text style={styles.plantCount}>18 Living</Text>
-          <Text style={[styles.plantCount, styles.deadCount]}>2 Dead</Text>
-        </View>
+
       </View>
 
       <View style={styles.photoSection}>
@@ -215,18 +210,7 @@ const styles = StyleSheet.create({
     color: '#166534',
     marginTop: 4,
   },
-  plantStats: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  plantCount: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#16A34A',
-  },
-  deadCount: {
-    color: '#EF4444',
-  },
+
   photoSection: {
     marginBottom: 24,
   },

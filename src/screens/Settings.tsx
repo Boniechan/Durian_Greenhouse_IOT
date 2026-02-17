@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-n
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import DatePicker from 'react-native-date-picker';
 import { configureNotifications } from '../services/notificationService';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,6 +15,8 @@ export default function Settings() {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(false);
   const [notificationInterval, setNotificationInterval] = React.useState('3');
+  const [plantingDate, setPlantingDate] = React.useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
 
   // Load saved settings when component mounts
   React.useEffect(() => {
@@ -24,6 +27,7 @@ export default function Settings() {
     try {
       const savedNotifications = await AsyncStorage.getItem('notificationsEnabled');
       const savedInterval = await AsyncStorage.getItem('notificationInterval');
+      const savedPlantingDate = await AsyncStorage.getItem('plantingDate');
       
       if (savedNotifications) {
         setNotificationsEnabled(JSON.parse(savedNotifications));
@@ -31,9 +35,16 @@ export default function Settings() {
       if (savedInterval) {
         setNotificationInterval(savedInterval);
       }
+      if (savedPlantingDate) {
+        setPlantingDate(new Date(savedPlantingDate));
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
     }
+  };
+
+  const handleDateChange = (selectedDate: Date) => {
+    setPlantingDate(selectedDate);
   };
 
   const handleNotificationToggle = async (value: boolean) => {
@@ -50,6 +61,7 @@ export default function Settings() {
     try {
       await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled));
       await AsyncStorage.setItem('notificationInterval', notificationInterval);
+      await AsyncStorage.setItem('plantingDate', plantingDate.toISOString());
       
       Alert.alert(
         'Success',
@@ -110,6 +122,41 @@ export default function Settings() {
           </Text>
         )}
       </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Greenhouse Setup</Text>
+        <View style={styles.settingRow}>
+          <View>
+            <Text style={styles.settingText}>Planting Date</Text>
+            <Text style={styles.settingDescription}>
+              {plantingDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.dateButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Ionicons name="calendar" size={20} color="#166534" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {showDatePicker && (
+        <View style={styles.datePickerContainer}>
+          <DatePicker
+            date={plantingDate}
+            onDateChange={handleDateChange}
+            maximumDate={new Date()}
+            mode="date"
+          />
+          <TouchableOpacity 
+            onPress={() => setShowDatePicker(false)}
+            style={styles.datePickerCloseButton}
+          >
+            <Text style={styles.datePickerCloseButtonText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <TouchableOpacity 
         style={styles.saveButton}
@@ -216,5 +263,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#D1FAE5',
+  },
+  dateButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#D1FAE5',
+  },
+  datePickerContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  datePickerCloseButton: {
+    backgroundColor: '#16A34A',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  datePickerCloseButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

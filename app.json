@@ -78,7 +78,15 @@
     "extra": {
       "eas": {
         "projectId": "682ff1cd-7974-4a38-98b7-ee311471fb4c"
-      }
+      },
+      "firebaseApiKey": "AIzaSyDlaFU34iAAo4ceymNckVbLLkuFkFVXiFA",
+      "firebaseAuthDomain": "durian-app-2cdce.firebaseapp.com",
+      "firebaseDatabaseUrl": "https://durian-app-2cdce-default-rtdb.firebaseio.com",
+      "firebaseProjectId": "durian-app-2cdce",
+      "firebaseStorageBucket": "durian-app-2cdce.firebasestorage.app",
+      "firebaseMessagingSenderId": "738089475179",
+      "firebaseAppId": "1:738089475179:web:a42bd7f49e8f9c29c6a52e",
+      "firebaseMeasurementId": "G-LVMS39DCH0"
     }
   }
 }

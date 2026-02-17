@@ -16,8 +16,6 @@ interface WeeklyRecord {
   temperature: number;
   humidity: number;
   soilMoisture: number;
-  livingPlants: number;
-  deadPlants: number;
   photoUrl: string | null;  // explicitly type photoUrl
 }
 
@@ -86,9 +84,6 @@ export default function WeeklyRecords() {
         <Text style={styles.statText}>Day: {item.daysSincePlanting}</Text>
         <Text style={styles.statText}>Temp: {item.temperature}°C</Text>
         <Text style={styles.statText}>Humidity: {item.humidity}%</Text>
-        <Text style={styles.statText}>
-          Plants: {item.livingPlants} living, {item.deadPlants} dead
-        </Text>
       </View>
     </View>
   );
