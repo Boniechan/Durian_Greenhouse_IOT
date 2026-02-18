@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { storage, firestore } from '../services/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useGreenhouseData } from '../hooks/useGreenhouseData';
 import { NavigationProp } from '../types/navigation';
 
@@ -20,7 +20,7 @@ export default function WeeklyUpdate() {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     
     if (permissionResult.granted === false) {
-      alert("You need to enable camera permissions to use this feature");
+      Alert.alert("Camera Permission", "You need to enable camera permissions to use this feature");
       return;
     }
 
@@ -37,7 +37,7 @@ export default function WeeklyUpdate() {
       }
     } catch (error) {
       console.error('Camera error:', error);
-      alert('Failed to capture image. Please try again.');
+      Alert.alert('Camera Error', 'Failed to capture image. Please try again.');
     }
   };
 
@@ -61,7 +61,7 @@ export default function WeeklyUpdate() {
 
       // Save record to Firestore
       const record = {
-        timestamp: new Date(),
+        timestamp: serverTimestamp(),
         daysSincePlanting: data.daysSincePlanting || 0,
         temperature: data.temperature || 0,
         humidity: data.humidity || 0,
@@ -69,13 +69,15 @@ export default function WeeklyUpdate() {
         photoUrl,
       };
 
-      await addDoc(collection(firestore, 'weekly-records'), record);
+      const weeklyRecordsRef = collection(firestore, 'weekly-records');
+      await addDoc(weeklyRecordsRef, record);
+      
       setImage(null);
-      alert('Record saved successfully!');
+      Alert.alert('Success', 'Record saved successfully!');
       navigation.goBack();
     } catch (error: any) {
       console.error('Error saving record:', error);
-      alert(`Failed to save record: ${error.message}`);
+      Alert.alert('Error', `Failed to save record: ${error.message}`);
     } finally {
       setUploading(false);
     }
@@ -95,19 +97,19 @@ export default function WeeklyUpdate() {
         <View style={styles.statsGrid}>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Day</Text>
-            <Text style={styles.statValue}>257</Text>
+            <Text style={styles.statValue}>{data.daysSincePlanting || 0}</Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Temperature</Text>
-            <Text style={styles.statValue}>29.5°C</Text>
+            <Text style={styles.statValue}>{data.temperature ? `${data.temperature.toFixed(1)}°C` : '-- °C'}</Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Humidity</Text>
-            <Text style={styles.statValue}>62%</Text>
+            <Text style={styles.statValue}>{data.humidity ? `${data.humidity}%` : '--%'}</Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Soil Moisture</Text>
-            <Text style={styles.statValue}>430</Text>
+            <Text style={styles.statValue}>{data.soilMoisture || 0}</Text>
           </View>
         </View>
 

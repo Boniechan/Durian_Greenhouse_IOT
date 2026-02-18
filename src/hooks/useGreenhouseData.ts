@@ -37,10 +37,21 @@ async function calculateDaysSincePlanting(): Promise<number> {
 
     const plantingDate = new Date(plantingDateStr);
     const today = new Date();
-    const timeDifference = today.getTime() - plantingDate.getTime();
+    
+    // Get only the date part (without time)
+    const plantingDateOnly = new Date(plantingDate.getFullYear(), plantingDate.getMonth(), plantingDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    // If planting date is in the future, return 0
+    if (todayOnly < plantingDateOnly) {
+      return 0;
+    }
+    
+    const timeDifference = todayOnly.getTime() - plantingDateOnly.getTime();
     const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
 
-    return Math.max(0, daysDifference);
+    // Add 1 to start counting from day 1 on the plant date
+    return daysDifference + 1;
   } catch (error) {
     console.error("Error calculating days since planting:", error);
     return 0;

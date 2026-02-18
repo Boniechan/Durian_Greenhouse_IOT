@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import DatePicker from 'react-native-date-picker';
 import { configureNotifications } from '../services/notificationService';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,6 +16,9 @@ export default function Settings() {
   const [notificationInterval, setNotificationInterval] = React.useState('3');
   const [plantingDate, setPlantingDate] = React.useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = React.useState(false);
+  const [selectedDay, setSelectedDay] = React.useState(plantingDate.getDate().toString());
+  const [selectedMonth, setSelectedMonth] = React.useState(plantingDate.getMonth().toString());
+  const [selectedYear, setSelectedYear] = React.useState(plantingDate.getFullYear().toString());
 
   // Load saved settings when component mounts
   React.useEffect(() => {
@@ -43,8 +45,19 @@ export default function Settings() {
     }
   };
 
-  const handleDateChange = (selectedDate: Date) => {
-    setPlantingDate(selectedDate);
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setPlantingDate(selectedDate);
+      setSelectedDay(selectedDate.getDate().toString());
+      setSelectedMonth(selectedDate.getMonth().toString());
+      setSelectedYear(selectedDate.getFullYear().toString());
+    }
+  };
+
+  const handleDateConfirm = () => {
+    const newDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), parseInt(selectedDay));
+    setPlantingDate(newDate);
+    setShowDatePicker(false);
   };
 
   const handleNotificationToggle = async (value: boolean) => {
@@ -143,17 +156,63 @@ export default function Settings() {
 
       {showDatePicker && (
         <View style={styles.datePickerContainer}>
-          <DatePicker
-            date={plantingDate}
-            onDateChange={handleDateChange}
-            maximumDate={new Date()}
-            mode="date"
-          />
+          <View style={styles.datePickerHeader}>
+            <Text style={styles.datePickerTitle}>Select Planting Date</Text>
+            <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+              <Ionicons name="close" size={24} color="#166534" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.pickerRow}>
+            <View style={styles.pickerColumn}>
+              <Text style={styles.pickerLabel}>Month</Text>
+              <Picker
+                selectedValue={selectedMonth}
+                onValueChange={setSelectedMonth}
+                style={styles.datePicker}
+                itemStyle={styles.pickerItem}
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <Picker.Item key={i} label={new Date(2000, i).toLocaleString('default', { month: 'short' })} value={i.toString()} />
+                ))}
+              </Picker>
+            </View>
+            
+            <View style={styles.pickerColumn}>
+              <Text style={styles.pickerLabel}>Day</Text>
+              <Picker
+                selectedValue={selectedDay}
+                onValueChange={setSelectedDay}
+                style={styles.datePicker}
+                itemStyle={styles.pickerItem}
+              >
+                {Array.from({ length: 31 }, (_, i) => (
+                  <Picker.Item key={i} label={(i + 1).toString().padStart(2, '0')} value={(i + 1).toString()} />
+                ))}
+              </Picker>
+            </View>
+            
+            <View style={styles.pickerColumn}>
+              <Text style={styles.pickerLabel}>Year</Text>
+              <Picker
+                selectedValue={selectedYear}
+                onValueChange={setSelectedYear}
+                style={styles.datePicker}
+                itemStyle={styles.pickerItem}
+              >
+                {Array.from({ length: 50 }, (_, i) => {
+                  const year = new Date().getFullYear() - i;
+                  return <Picker.Item key={i} label={year.toString()} value={year.toString()} />;
+                })}
+              </Picker>
+            </View>
+          </View>
+
           <TouchableOpacity 
-            onPress={() => setShowDatePicker(false)}
-            style={styles.datePickerCloseButton}
+            style={styles.datePickerConfirmButton}
+            onPress={handleDateConfirm}
           >
-            <Text style={styles.datePickerCloseButtonText}>Done</Text>
+            <Text style={styles.datePickerConfirmButtonText}>Confirm</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -272,21 +331,56 @@ const styles = StyleSheet.create({
     borderColor: '#D1FAE5',
   },
   datePickerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 16,
+    zIndex: 1000,
   },
-  datePickerCloseButton: {
+  datePickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  datePickerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  pickerColumn: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  pickerLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  datePicker: {
+    width: 100,
+    height: 150,
+  },
+  datePickerConfirmButton: {
     backgroundColor: '#16A34A',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 8,
   },
-  datePickerCloseButtonText: {
+  datePickerConfirmButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
