@@ -1,0 +1,78 @@
+{
+  "expo": {
+    "name": "Durian Greenhouse",
+    "slug": "durian-greenhouse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "owner": "bivinin",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos to save greenhouse images.",
+          "cameraPermission": "The app needs access to your camera to take greenhouse photos."
+        }
+      ],
+      "expo-font"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.duriangreenhouse",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos of your greenhouse.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photos to save greenhouse images.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.yourcompany.duriangreenhouse",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ce8ea04a-f3a8-4649-b62d-e79275320c68"
+      },
+      "firebaseApiKey": "AIzaSyDlaFU34iAAo4ceymNckVbLLkuFkFVXiFA",
+      "firebaseAuthDomain": "durian-app-2cdce.firebaseapp.com",
+      "firebaseDatabaseUrl": "https://durian-app-2cdce-default-rtdb.firebaseio.com",
+      "firebaseProjectId": "durian-app-2cdce",
+      "firebaseStorageBucket": "durian-app-2cdce.firebasestorage.app",
+      "firebaseMessagingSenderId": "738089475179",
+      "firebaseAppId": "1:738089475179:web:a42bd7f49e8f9c29c6a52e",
+      "firebaseMeasurementId": "G-LVMS39DCH0"
+    }
+  }
+}
