@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert, ScrollView } f
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import { configureNotifications } from '../services/notificationService';
+import { configureNotifications, disableNotifications } from '../services/notificationService';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
@@ -25,6 +25,23 @@ export default function Settings() {
     loadSavedSettings();
   }, []);
 
+  const parseStoredBoolean = (value: string | null): boolean => {
+    if (!value) return false;
+
+    try {
+      const parsed = JSON.parse(value);
+      if (typeof parsed === 'boolean') {
+        return parsed;
+      }
+      if (typeof parsed === 'string') {
+        return parsed.toLowerCase() === 'true';
+      }
+      return Boolean(parsed);
+    } catch {
+      return value.toLowerCase() === 'true';
+    }
+  };
+
   const loadSavedSettings = async () => {
     try {
       const savedNotifications = await AsyncStorage.getItem('notificationsEnabled');
@@ -32,7 +49,7 @@ export default function Settings() {
       const savedPlantingDate = await AsyncStorage.getItem('plantingDate');
       
       if (savedNotifications) {
-        setNotificationsEnabled(JSON.parse(savedNotifications));
+        setNotificationsEnabled(parseStoredBoolean(savedNotifications));
       }
       if (savedInterval) {
         setNotificationInterval(savedInterval);
@@ -67,11 +84,24 @@ export default function Settings() {
       if (!success) {
         setNotificationsEnabled(false);
       }
+    } else {
+      await disableNotifications();
     }
   };
 
   const handleSaveSettings = async () => {
     try {
+      if (notificationsEnabled) {
+        const success = await configureNotifications(parseInt(notificationInterval));
+        if (!success) {
+          setNotificationsEnabled(false);
+          Alert.alert('Error', 'Failed to schedule reminders');
+          return;
+        }
+      } else {
+        await disableNotifications();
+      }
+
       await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled));
       await AsyncStorage.setItem('notificationInterval', notificationInterval);
       await AsyncStorage.setItem('plantingDate', plantingDate.toISOString());
@@ -102,7 +132,7 @@ export default function Settings() {
         <View style={styles.settingRow}>
           <Text style={styles.settingText}>Enable Notifications</Text>
           <Switch
-            value={notificationsEnabled}
+            value={!!notificationsEnabled}
             onValueChange={handleNotificationToggle}
             trackColor={{ false: '#E5E7EB', true: '#BBF7D0' }}
             thumbColor={notificationsEnabled ? '#16A34A' : '#9CA3AF'}
@@ -111,7 +141,7 @@ export default function Settings() {
 
         {notificationsEnabled && (
           <View style={styles.settingRow}>
-            <Text style={styles.settingText}>Check Interval</Text>
+            <Text style={styles.settingText}>Reminder Interval</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={notificationInterval}
@@ -131,13 +161,13 @@ export default function Settings() {
 
         {!notificationsEnabled && (
           <Text style={styles.errorText}>
-            Notifications are blocked. Please enable them in your device settings.
+            Reminders are off. Enable notifications in device settings if prompted.
           </Text>
         )}
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Greenhouse Setup</Text>
+        <Text style={styles.sectionTitle}>Monitoring Setup</Text>
         <View style={styles.settingRow}>
           <View>
             <Text style={styles.settingText}>Planting Date</Text>
@@ -155,66 +185,84 @@ export default function Settings() {
       </View>
 
       {showDatePicker && (
-        <View style={styles.datePickerContainer}>
-          <View style={styles.datePickerHeader}>
-            <Text style={styles.datePickerTitle}>Select Planting Date</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-              <Ionicons name="close" size={24} color="#166534" />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.pickerRow}>
-            <View style={styles.pickerColumn}>
-              <Text style={styles.pickerLabel}>Month</Text>
-              <Picker
-                selectedValue={selectedMonth}
-                onValueChange={setSelectedMonth}
-                style={styles.datePicker}
-                itemStyle={styles.pickerItem}
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <Picker.Item key={i} label={new Date(2000, i).toLocaleString('default', { month: 'short' })} value={i.toString()} />
-                ))}
-              </Picker>
-            </View>
-            
-            <View style={styles.pickerColumn}>
-              <Text style={styles.pickerLabel}>Day</Text>
-              <Picker
-                selectedValue={selectedDay}
-                onValueChange={setSelectedDay}
-                style={styles.datePicker}
-                itemStyle={styles.pickerItem}
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <Picker.Item key={i} label={(i + 1).toString().padStart(2, '0')} value={(i + 1).toString()} />
-                ))}
-              </Picker>
-            </View>
-            
-            <View style={styles.pickerColumn}>
-              <Text style={styles.pickerLabel}>Year</Text>
-              <Picker
-                selectedValue={selectedYear}
-                onValueChange={setSelectedYear}
-                style={styles.datePicker}
-                itemStyle={styles.pickerItem}
-              >
-                {Array.from({ length: 50 }, (_, i) => {
-                  const year = new Date().getFullYear() - i;
-                  return <Picker.Item key={i} label={year.toString()} value={year.toString()} />;
-                })}
-              </Picker>
-            </View>
-          </View>
-
+        <>
           <TouchableOpacity 
-            style={styles.datePickerConfirmButton}
-            onPress={handleDateConfirm}
-          >
-            <Text style={styles.datePickerConfirmButtonText}>Confirm</Text>
-          </TouchableOpacity>
-        </View>
+            style={styles.datePickerBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowDatePicker(false)}
+          />
+          <View style={styles.datePickerContainer}>
+            <View style={styles.datePickerHeader}>
+              <Text style={styles.datePickerTitle}>Select Planting Date</Text>
+              <TouchableOpacity 
+                style={styles.datePickerCloseButton}
+                onPress={() => setShowDatePicker(false)}
+              >
+                <Ionicons name="close" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.pickerRow}>
+              <View style={styles.pickerColumn}>
+                <Text style={styles.pickerLabel}>Month</Text>
+                <Picker
+                  selectedValue={selectedMonth}
+                  onValueChange={setSelectedMonth}
+                  style={styles.datePicker}
+                  itemStyle={styles.pickerItem}
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <Picker.Item key={i} label={new Date(2000, i).toLocaleString('default', { month: 'short' })} value={i.toString()} />
+                  ))}
+                </Picker>
+              </View>
+              
+              <View style={styles.pickerColumn}>
+                <Text style={styles.pickerLabel}>Day</Text>
+                <Picker
+                  selectedValue={selectedDay}
+                  onValueChange={setSelectedDay}
+                  style={styles.datePicker}
+                  itemStyle={styles.pickerItem}
+                >
+                  {Array.from({ length: 31 }, (_, i) => (
+                    <Picker.Item key={i} label={(i + 1).toString().padStart(2, '0')} value={(i + 1).toString()} />
+                  ))}
+                </Picker>
+              </View>
+              
+              <View style={styles.pickerColumn}>
+                <Text style={styles.pickerLabel}>Year</Text>
+                <Picker
+                  selectedValue={selectedYear}
+                  onValueChange={setSelectedYear}
+                  style={styles.datePicker}
+                  itemStyle={styles.pickerItem}
+                >
+                  {Array.from({ length: 50 }, (_, i) => {
+                    const year = new Date().getFullYear() - i;
+                    return <Picker.Item key={i} label={year.toString()} value={year.toString()} />;
+                  })}
+                </Picker>
+              </View>
+            </View>
+
+            <View style={styles.datePickerButtonGroup}>
+              <TouchableOpacity 
+                style={styles.datePickerCancelButton}
+                onPress={() => setShowDatePicker(false)}
+              >
+                <Text style={styles.datePickerCancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.datePickerConfirmButton}
+                onPress={handleDateConfirm}
+              >
+                <Text style={styles.datePickerConfirmButtonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
       )}
 
       <TouchableOpacity 
@@ -332,31 +380,54 @@ const styles = StyleSheet.create({
   },
   datePickerContainer: {
     position: 'absolute',
+    bottom: 20,
+    left: 12,
+    right: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    zIndex: 1001,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  datePickerBackdrop: {
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    zIndex: 1000,
+    top: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
   },
   datePickerHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   datePickerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  datePickerCloseButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#16A34A',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   pickerRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 16,
+    overflow: 'visible',
   },
   pickerColumn: {
     flex: 1,
@@ -370,19 +441,39 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     width: 100,
-    height: 150,
+    height: 200,
+    color: '#374151',
   },
   datePickerConfirmButton: {
     backgroundColor: '#16A34A',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    flex: 1,
+    marginLeft: 8,
   },
   datePickerConfirmButtonText: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  datePickerButtonGroup: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  datePickerCancelButton: {
+    backgroundColor: '#E5E7EB',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    flex: 1,
+  },
+  datePickerCancelButtonText: {
+    color: '#374151',
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

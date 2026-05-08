@@ -5,6 +5,10 @@ export type RootStackParamList = {
   WeeklyRecords: undefined;
   WeeklyUpdate: undefined;
   Settings: undefined;
+  WaterPumpRecords: undefined;
+  MistingRecords: undefined;
+  FanRecords: undefined;
+  SensorAnalytics: undefined;
 };
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

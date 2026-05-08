@@ -1,12 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useGreenhouseData } from "../hooks/useGreenhouseData";
+import { GreenhouseData } from "../hooks/useGreenhouseData";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function StatusIndicator() {
-  const { data } = useGreenhouseData();
+interface StatusIndicatorProps {
+  data: GreenhouseData;
+}
 
-  const ControlItem = ({ icon, label, status }: { icon: string; label: string; status: boolean }) => (
+export default function StatusIndicator({ data }: StatusIndicatorProps) {
+
+  const ControlItem = ({ icon, label, status }: { icon: React.ComponentProps<typeof MaterialCommunityIcons>["name"]; label: string; status: boolean }) => (
     <View style={styles.controlRow}>
       <View style={styles.controlItem}>
         <MaterialCommunityIcons 
@@ -26,7 +29,7 @@ export default function StatusIndicator() {
 
   return (
     <View style={styles.card}>
-      <Text style={styles.heading}>Device Controls</Text>
+      <Text style={styles.heading}>Live Device Status</Text>
       <ControlItem icon="water-pump" label="Water Pump" status={data.waterPump ?? false} />
       <ControlItem icon="fan" label="Fan" status={data.fan ?? false} />
       <ControlItem icon="water-opacity" label="Misting" status={data.misting ?? false} />

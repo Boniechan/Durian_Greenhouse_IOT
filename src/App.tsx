@@ -3,6 +3,7 @@ import { SafeAreaView, StatusBar } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import AppStack from "./navigation/AppStack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { configureNotifications } from './services/notificationService';
 
 export default function App() {
   React.useEffect(() => {
@@ -21,7 +22,20 @@ export default function App() {
       }
     };
 
+    // Initialize notifications
+    const initializeNotifications = async () => {
+      try {
+        const success = await configureNotifications(24); // Check every 24 hours for periodic updates
+        if (success) {
+          console.log('✅ Notifications configured successfully');
+        }
+      } catch (error) {
+        console.error('Error initializing notifications:', error);
+      }
+    };
+
     initializePlantingDate();
+    initializeNotifications();
   }, []);
 
   return (

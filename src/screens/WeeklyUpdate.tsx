@@ -109,7 +109,7 @@ export default function WeeklyUpdate() {
           </View>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Soil Moisture</Text>
-            <Text style={styles.statValue}>{data.soilMoisture || 0}</Text>
+            <Text style={styles.statValue}>{data.soilMoisture ?? 0}% wet</Text>
           </View>
         </View>
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { firestore } from '../services/firebaseConfig';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '../types/navigation';
 
@@ -58,13 +58,26 @@ export default function WeeklyRecords() {
   // Update the renderItem function
   const renderItem = ({ item }: { item: WeeklyRecord }) => (
     <View style={styles.recordCard}>
-      <Text style={styles.dateText}>
-        {item.timestamp.toDate().toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })}
-      </Text>
+      <View style={styles.cardHeader}>
+        <View>
+          <Text style={styles.dateText}>
+            {item.timestamp.toDate().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </Text>
+          <Text style={styles.timeText}>
+            {item.timestamp.toDate().toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </Text>
+        </View>
+        <View style={styles.dayBadge}>
+          <Text style={styles.dayBadgeText}>Day {item.daysSincePlanting}</Text>
+        </View>
+      </View>
       
       {item.photoUrl ? (
         <Image 
@@ -80,10 +93,30 @@ export default function WeeklyRecords() {
         </View>
       )}
       
-      <View style={styles.statsContainer}>
-        <Text style={styles.statText}>Day: {item.daysSincePlanting}</Text>
-        <Text style={styles.statText}>Temp: {item.temperature}°C</Text>
-        <Text style={styles.statText}>Humidity: {item.humidity}%</Text>
+      <View style={styles.statsGrid}>
+        <View style={styles.statItem}>
+          <View style={styles.statIconContainer}>
+            <MaterialCommunityIcons name="thermometer" size={20} color="#EF4444" />
+          </View>
+          <Text style={styles.statLabel}>Temperature</Text>
+          <Text style={styles.statValue}>{item.temperature.toFixed(1)}°C</Text>
+        </View>
+        
+        <View style={styles.statItem}>
+          <View style={styles.statIconContainer}>
+            <MaterialCommunityIcons name="water-percent" size={20} color="#3B82F6" />
+          </View>
+          <Text style={styles.statLabel}>Humidity</Text>
+          <Text style={styles.statValue}>{item.humidity}%</Text>
+        </View>
+        
+        <View style={styles.statItem}>
+          <View style={styles.statIconContainer}>
+            <MaterialCommunityIcons name="sprout" size={20} color="#92400E" />
+          </View>
+          <Text style={styles.statLabel}>Soil Moisture</Text>
+          <Text style={styles.statValue}>{item.soilMoisture}% wet</Text>
+        </View>
       </View>
     </View>
   );
@@ -132,9 +165,9 @@ export default function WeeklyRecords() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     padding: 16,
-    marginTop: 45, // Add this line
+    marginTop: 45,
   },
   header: {
     flexDirection: 'row',
@@ -143,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
     color: '#166534',
   },
@@ -164,42 +197,103 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   recordCard: {
-    backgroundColor: '#F0FDF4',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
   },
   dateText: {
     fontSize: 16,
+    fontWeight: '700',
+    color: '#166534',
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  dayBadge: {
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  dayBadgeText: {
+    fontSize: 12,
     fontWeight: '600',
     color: '#166534',
-    marginBottom: 8,
   },
   recordImage: {
     width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 12,
+    height: 220,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   noImageContainer: {
-    height: 200,
+    height: 220,
     backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    marginBottom: 12,
+    borderRadius: 12,
+    marginBottom: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
   },
   noImageText: {
     color: '#9CA3AF',
     marginTop: 8,
     fontSize: 14,
   },
-  statsContainer: {
-    gap: 4,
+  statsGrid: {
+    flexDirection: 'row',
+    gap: 12,
   },
-  statText: {
+  statItem: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  statIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F0FDF4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '500',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  statValue: {
     fontSize: 14,
-    color: '#374151',
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
   },
   addButton: {
     backgroundColor: '#166534',
@@ -224,3 +318,7 @@ const styles = StyleSheet.create({
     borderColor: '#D1FAE5',
   },
 });
+
+function alert(arg0: string) {
+  throw new Error('Function not implemented.');
+}
