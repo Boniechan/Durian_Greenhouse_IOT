@@ -1,140 +1,120 @@
-# Durian Greenhouse IoT App
+# 🌱 Durian Greenhouse IoT App
 
-A React Native mobile application for monitoring and managing greenhouse conditions, specifically designed for durian cultivation. This app provides real-time sensor data monitoring, environmental controls, and data logging capabilities.
+[![React Native](https://img.shields.io/badge/React%20Native-0.73+-61DAFB?style=flat-square&logo=react)](https://reactnative.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Latest-FFA500?style=flat-square&logo=firebase)](https://firebase.google.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-## 📱 Features
+A modern React Native mobile application for monitoring and controlling greenhouse environmental conditions, specifically designed for durian cultivation. Track real-time sensor data, manage environmental controls, and receive intelligent alerts—all from your mobile device.
 
-- **Real-time Sensor Monitoring**: Track temperature, humidity, soil moisture, and other environmental parameters
-- **Dashboard Overview**: Visual representation of current greenhouse conditions
-- **Weekly Records**: Historical data tracking and analysis
-- **Settings Management**: Configure app preferences and greenhouse parameters
-- **Push Notifications**: Alerts for critical environmental conditions
-- **Cross-platform**: Available for both iOS and Android devices
+## ✨ Features
 
-## 🛠️ Technology Stack
+- 📊 **Real-time Sensor Monitoring** — Track temperature, humidity, soil moisture, and light levels
+- 🎯 **Smart Dashboard** — Visual representation of current greenhouse conditions at a glance
+- 📈 **Historical Analytics** — Weekly records and trend analysis
+- ⚙️ **Smart Settings** — Configure greenhouse parameters and alert thresholds
+- 🔔 **Push Notifications** — Instant alerts for critical environmental events
+- 📱 **Cross-platform** — Native iOS and Android support via Expo
 
-- **Framework**: React Native with Expo
+## 🚀 Tech Stack
+
+- **Framework**: React Native + Expo
 - **Language**: TypeScript
 - **Navigation**: React Navigation v7
-- **Backend**: Firebase (Realtime Database, Firestore, Storage)
+- **Backend**: Firebase (Realtime Database, Firestore, Storage, Cloud Messaging)
 - **State Management**: React Hooks
-- **Styling**: NativeWind (Tailwind CSS for React Native)
-- **Notifications**: Expo Notifications
+- **UI**: NativeWind (Tailwind CSS for React Native)
+- **Charts**: react-native-chart-kit
 
 ## 📋 Prerequisites
 
-Before running this application, make sure you have the following installed:
+- **Node.js** v16 or higher
+- **npm** or **yarn**
+- **Expo CLI** — `npm install -g @expo/cli`
+- **Expo Go** app on your mobile device (for testing)
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Expo CLI (`npm install -g @expo/cli`)
-- Expo Go app on your mobile device (for testing)
+## ⚡ Quick Start
 
-## 🚀 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
-   cd durian-greenhouse
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   Create a `.env` file in the root directory and add your Firebase configuration:
-   ```env
-   EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
-   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-   EXPO_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
-   EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-   EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
-   EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
-   ```
-
-4. **Configure Firebase**
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-   - Enable Realtime Database, Firestore, and Storage
-   - Add your iOS/Android app configurations
-   - Update the environment variables with your Firebase config
-
-## 🏃‍♂️ Running the App
-
-### Development Mode
+### 1. Clone & Install
 
 ```bash
-# Start the Expo development server
-npm start
-
-# Run on Android
-npm run android
-
-# Run on iOS
-npm run ios
-
-# Run on web
-npm run web
+git clone https://github.com/yourusername/durian-greenhouse.git
+cd durian-greenhouse
+npm install
 ```
 
-### Testing on Device
+### 2. Configure Firebase
 
-1. Install Expo Go on your mobile device
-2. Scan the QR code displayed in the terminal or browser
-3. The app will load on your device
+Create a `.env` file in the root directory:
+
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+EXPO_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
+
+Get these values from the [Firebase Console](https://console.firebase.google.com/).
+
+### 3. Start Developing
+
+```bash
+npm start                    # Start Expo dev server
+npm run android            # Run on Android
+npm run ios                # Run on iOS (macOS only)
+npm run web                # Run on web
+```
+
+Scan the QR code with Expo Go to test on your device.
 
 ## 📁 Project Structure
 
 ```
-durian-greenhouse/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── SensorCard.tsx
-│   │   └── StatusIndicator.tsx
-│   ├── hooks/              # Custom React hooks
-│   │   └── useGreenhouseData.ts
-│   ├── navigation/         # Navigation configuration
-│   │   ├── AppNavigator.tsx
-│   │   └── AppStack.tsx
-│   ├── screens/            # App screens
-│   │   ├── Dashboard.tsx
-│   │   ├── Settings.tsx
-│   │   ├── WeeklyRecords.tsx
-│   │   └── WeeklyUpdate.tsx
-│   ├── services/           # External services
-│   │   ├── firebaseConfig.ts
-│   │   └── notificationService.ts
-│   └── types/              # TypeScript type definitions
-│       └── navigation.ts
-├── assets/                 # Static assets (images, icons)
-├── App.tsx                 # Root component
-├── app.json               # Expo configuration
-├── package.json           # Dependencies and scripts
-└── tsconfig.json          # TypeScript configuration
+src/
+├── components/              # Reusable UI components
+│   ├── SensorCard.tsx
+│   ├── SimpleLineChart.tsx
+│   └── StatusIndicator.tsx
+├── hooks/                   # Custom React hooks
+│   └── useGreenhouseData.ts
+├── navigation/              # Navigation setup
+│   ├── AppNavigator.tsx
+│   └── AppStack.tsx
+├── screens/                 # App screens
+│   ├── Dashboard.tsx
+│   ├── SensorAnalytics.tsx
+│   ├── WeeklyRecords.tsx
+│   ├── Settings.tsx
+│   └── FanRecords.tsx, MistingRecords.tsx, etc.
+├── services/                # External services & API
+│   ├── firebaseConfig.ts
+│   ├── analyticsService.ts
+│   ├── notificationService.ts
+│   └── fanService.ts, mistingService.ts, waterPumpService.ts
+└── types/                   # TypeScript definitions
+    ├── mistingFan.ts
+    ├── waterPump.ts
+    └── navigation.ts
+
+App.tsx                       # Root component
+app.json                      # Expo configuration
+tsconfig.json                 # TypeScript config
 ```
 
-## 🔧 Configuration
+## 🔧 Firebase Setup
 
-### Firebase Setup
+1. Create a project at [Firebase Console](https://console.firebase.google.com/)
+2. Enable: Realtime Database, Firestore, Storage, Cloud Messaging
+3. Add iOS & Android app configurations
+4. Update `.env` with your Firebase credentials
+5. Set up Firestore rules for data access control
 
-1. **Realtime Database**: Configure rules for sensor data storage
-2. **Firestore**: Set up collections for user preferences and historical data
-3. **Storage**: Configure for image uploads (greenhouse photos)
-4. **Notifications**: Set up Firebase Cloud Messaging for push notifications
+## 📊 Core Data Models
 
-### Permissions
-
-The app requires the following permissions:
-- **Camera**: For taking greenhouse photos
-- **Photo Library**: For saving and accessing images
-- **Notifications**: For environmental alerts
-
-## 📊 Data Structure
-
-### Sensor Data Format
 ```typescript
 interface SensorData {
   temperature: number;
@@ -143,10 +123,7 @@ interface SensorData {
   lightLevel: number;
   timestamp: string;
 }
-```
 
-### Greenhouse Configuration
-```typescript
 interface GreenhouseConfig {
   temperatureRange: { min: number; max: number };
   humidityRange: { min: number; max: number };
@@ -155,70 +132,72 @@ interface GreenhouseConfig {
 }
 ```
 
-## 🔔 Notifications
+## 🔔 Alert System
 
-The app supports push notifications for:
-- Temperature alerts (too high/low)
-- Humidity warnings
-- Soil moisture alerts
-- System connectivity issues
+Automatic notifications for:
+- 🌡️ Temperature threshold violations
+- 💧 Humidity warnings
+- 🌍 Soil moisture alerts
+- 📡 Connectivity issues
+
+## 🛠️ Available Scripts
+
+```bash
+npm start          # Start Expo development server
+npm run android    # Build and run on Android
+npm run ios        # Build and run on iOS (macOS only)
+npm run web        # Run web version
+npm run build      # Production build
+npm run lint       # TypeScript type checking
+```
 
 ## 🤝 Contributing
 
+We welcome contributions! Please follow these steps:
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+| Issue | Solution |
+|-------|----------|
+| Metro bundler errors | Run `expo start -c` to clear cache |
+| Firebase connection fails | Verify `.env` variables and network connectivity |
+| Notifications not working | Check Firebase Cloud Messaging setup and device permissions |
+| Android build issues | Clear Android cache: `cd android && ./gradlew clean` |
 
-1. **Metro bundler issues**: Clear cache with `expo start -c`
-2. **Firebase connection errors**: Check environment variables and network connectivity
-3. **Notification not working**: Verify Firebase Cloud Messaging setup and device permissions
+## 📦 Production Build
 
-### Debug Mode
-
-Enable debug mode by setting `__DEV__` flag in your environment to see detailed Firebase configuration logs.
-
-## 📞 Support
-
-For support and questions:
-- Create an issue in this repository
-- Contact the development team
-
-## 🚀 Deployment
-
-### Building for Production
+### Using EAS Build (Recommended)
 
 ```bash
-# Build for Android
-expo build:android
-
-# Build for iOS
-expo build:ios
-```
-
-### Expo Application Services (EAS)
-
-For modern builds, use EAS Build:
-```bash
-# Install EAS CLI
 npm install -g @expo/eas-cli
-
-# Configure EAS
 eas build:configure
-
-# Build for production
 eas build --platform all
 ```
 
+### Local Build
+
+```bash
+expo build:android
+expo build:ios
+```
+
+## 🙋 Support & Questions
+
+- 🐛 Found a bug? [Create an issue](../../issues)
+- 💡 Have a suggestion? [Start a discussion](../../discussions)
+
 ---
 
-**Happy Greenhouse Monitoring! 🌱**
+<div align="center">
+
+**[⭐ Star this repo if it helped you!](../../)**
+
+Made with 🌱 for durian growers everywhere
+
+</div>
